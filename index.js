@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
 
@@ -18,7 +18,36 @@ app.get('/', (req, res) => {
 });
 
 client.connect(err => {
-    const collection = client.db("test").collection("devices");
+    const servicesCollection = client.db("memory-makers-photography").collection("services");
+
+    const booksCollection = client.db("memory-makers-photography").collection("books");
+
+    app.post("/addService", (req, res) =>{
+      const service = req.body;
+      servicesCollection.insertOne(service)
+      .then(result => res.send(result.insertedCount > 0) );
+    });
+
+    app.post("/bookOrder", (req, res) =>{
+      const bookOrder = req.body;
+      booksCollection.insertOne(bookOrder)
+      .then(result => res.send(result.insertedCount > 0) );
+    });
+
+    app.get('/services', (req, res) => {
+      servicesCollection.find({})
+      .toArray((err, documents)=>{
+        res.send(documents);
+      })
+    });
+
+    app.get('/service/:id', (req, res) => {
+      const {id} = req.params;
+      servicesCollection.find({_id: ObjectId(id)})
+      .toArray((err, documents)=>{
+        res.send(documents[0]);
+      })
+    });
 
 });
 
