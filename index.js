@@ -22,6 +22,8 @@ client.connect(err => {
 
     const booksCollection = client.db("memory-makers-photography").collection("books");
 
+    const feedbackCollection = client.db("memory-makers-photography").collection("feedback");
+
     app.post("/addService", (req, res) =>{
       const service = req.body;
       servicesCollection.insertOne(service)
@@ -34,8 +36,22 @@ client.connect(err => {
       .then(result => res.send(result.insertedCount > 0) );
     });
 
+    app.post("/sendFeedback", (req, res) =>{
+      const feedback = req.body;
+      feedbackCollection.insertOne(feedback)
+      .then(result => res.send(result.insertedCount > 0) );
+    });
+
     app.get('/services', (req, res) => {
       servicesCollection.find({})
+      .toArray((err, documents)=>{
+        res.send(documents);
+      })
+    });
+
+    app.get('/userBookings', (req, res) => {
+      const {email} = req.query;
+      booksCollection.find({"user.email": email})
       .toArray((err, documents)=>{
         res.send(documents);
       })
