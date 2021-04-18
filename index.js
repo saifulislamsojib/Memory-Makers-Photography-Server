@@ -78,8 +78,8 @@ client.connect(err => {
       .then(result => res.send(result.insertedCount > 0) );
     });
 
-    app.post('/userBookings', (req, res) => {
-      const {email} = req.query;
+    app.post('/allBookings', (req, res) => {
+      const { email } = req.query;
       const bearer = req.headers.authorization;
       if (bearer && bearer.startsWith('Bearer ')) {
         const idToken = bearer.split(' ')[1];
@@ -88,21 +88,28 @@ client.connect(err => {
         .verifyIdToken(idToken)
         .then(decodedToken => {
           if (email === decodedToken.email) {
-            booksCollection.find({"user.email": email})
-            .toArray((err, documents)=>{
-              res.send(documents);
+            adminsCollection.find({ email })
+            .toArray((err, documents)=> {
+              let finder = {};
+              if(documents.length === 0){
+                finder = {"user.email": email};
+              };
+              booksCollection.find(finder)
+              .toArray((err, documents)=>{
+                res.send(documents);
+              })
             })
           }
           else{
-            res.status(401).send([{message: 'Unauthorized Access'}]);
+            res.status(401).send({message: 'Unauthorized Access'});
           }
         })
         .catch(error => {
-          res.status(401).send([{message: 'Unauthorized Access'}]);
+          res.status(401).send({message: 'Unauthorized Access'});
         });
       }
       else{
-        res.status(401).send([{message: 'Unauthorized Access'}]);
+        res.status(401).send({message: 'Unauthorized Access'});
       }
     });
 
@@ -141,6 +148,27 @@ client.connect(err => {
         res.send(documents[0]);
       })
     });
+
+    app.patch('/updateBooking/:id', (req, res) => {
+      const product = req.body;
+      const {id} = req.params;
+      booksCollection.updateOne(
+        {_id: ObjectId(id)},
+        { $set: product }
+        )
+      .then(result => {
+        res.send(result.modifiedCount > 0);
+      })
+    });
+
+    app.delete('/deleteService/:id', (req, res) => {
+      const {id} = req.params;
+      servicesCollection.deleteOne({_id: ObjectId(id)})
+      .then(result => {
+        res.send(result.deletedCount > 0);
+      })
+    });
+
 });
 
 app.listen(port, () => {
