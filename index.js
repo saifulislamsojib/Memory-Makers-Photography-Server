@@ -161,6 +161,18 @@ client.connect(err => {
       })
     });
 
+    app.patch('/updateService/:id', (req, res) => {
+      const service = req.body;
+      const {id} = req.params;
+      servicesCollection.updateOne(
+        {_id: ObjectId(id)},
+        { $set: service }
+        )
+      .then(result => {
+        res.send(result.modifiedCount > 0);
+      })
+    });
+
     app.delete('/deleteService/:id', (req, res) => {
       const {id} = req.params;
       servicesCollection.deleteOne({_id: ObjectId(id)})
