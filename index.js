@@ -40,10 +40,27 @@ client.connect(err => {
       .then(result => res.send(result.insertedCount > 0) );
     });
 
+    app.get('/admins', (req, res) => {
+      adminsCollection.find({})
+      .toArray((err, documents)=>{
+        res.send(documents);
+      })
+    });
+
+    app.delete('/deleteAdmin/:id', (req, res) => {
+      const {id} = req.params;
+      adminsCollection.deleteOne({_id: ObjectId(id)})
+      .then(result => {
+        res.send(result.deletedCount > 0);
+      })
+    });
+
     app.post("/addAdmin", (req, res) =>{
-      const { email } = req.body;
-      adminsCollection.insertOne({ email })
-      .then(result => res.send(result.insertedCount > 0) );
+      const { email, name } = req.body;
+      adminsCollection.insertOne({ email, name })
+      .then(result => {
+        res.send({inserted: result.insertedCount > 0, _id: result.insertedId})
+      });
     });
 
     app.post("/bookOrder", (req, res) =>{
