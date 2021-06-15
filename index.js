@@ -37,7 +37,7 @@ client.connect(err => {
     app.post("/addService", (req, res) =>{
       const service = req.body;
       servicesCollection.insertOne(service)
-      .then(result => res.send(result.insertedCount > 0) );
+      .then(result => res.send({inserted: result.insertedCount > 0, _id: result.insertedId}));
     });
 
     app.get('/admins', (req, res) => {
@@ -66,7 +66,7 @@ client.connect(err => {
     app.post("/bookOrder", (req, res) =>{
       const bookOrder = req.body;
       booksCollection.insertOne(bookOrder)
-      .then(result => res.send(result.insertedCount > 0) );
+      .then(result => res.send({inserted: result.insertedCount > 0, _id: result.insertedId}));
     });
 
     app.post("/sendFeedback", (req, res) =>{
@@ -186,7 +186,7 @@ client.connect(err => {
         { $set: service }
         )
       .then(result => {
-        res.send(result.modifiedCount > 0);
+        res.send({inserted: result.modifiedCount > 0});
       })
     });
 
