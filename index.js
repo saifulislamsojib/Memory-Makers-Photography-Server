@@ -30,8 +30,6 @@ client.connect(err => {
 
     const feedbackCollection = client.db("memory-makers-photography").collection("feedback");
 
-    const messagesCollection = client.db("memory-makers-photography").collection("messages");
-
     const adminsCollection = client.db("memory-makers-photography").collection("admins");
 
     app.post("/addService", (req, res) =>{
@@ -89,10 +87,12 @@ client.connect(err => {
       })
     });
 
-    app.post("/sendMessage", (req, res) =>{
-      const contactMessage = req.body;
-      messagesCollection.insertOne(contactMessage)
-      .then(result => res.send(result.insertedCount > 0) );
+    app.get('/review', (req, res) => {
+      const { email } = req.query;
+      feedbackCollection.find({ email })
+      .toArray((err, documents)=>{
+        res.send(documents[0]);
+      })
     });
 
     app.post('/allBookings', (req, res) => {
@@ -187,6 +187,18 @@ client.connect(err => {
         )
       .then(result => {
         res.send({inserted: result.modifiedCount > 0});
+      })
+    });
+
+    app.patch('/updateFeedback/:id', (req, res) => {
+      const feedback = req.body;
+      const {id} = req.params;
+      feedbackCollection.updateOne(
+        {_id: ObjectId(id)},
+        { $set: feedback }
+        )
+      .then(result => {
+        res.send(result.modifiedCount > 0);
       })
     });
 
