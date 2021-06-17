@@ -118,15 +118,15 @@ client.connect(err => {
             })
           }
           else{
-            res.status(401).send({message: 'Unauthorized Access'});
+            res.status(401).send([{message: 'Unauthorized Access'}]);
           }
         })
         .catch(error => {
-          res.status(401).send({message: 'Unauthorized Access'});
+          res.status(401).send([{message: 'Unauthorized Access'}]);
         });
       }
       else{
-        res.status(401).send({message: 'Unauthorized Access'});
+        res.status(401).send([{message: 'Unauthorized Access'}]);
       }
     });
 
