@@ -70,7 +70,7 @@ client.connect(err => {
     app.post("/sendFeedback", (req, res) =>{
       const feedback = req.body;
       feedbackCollection.insertOne(feedback)
-      .then(result => res.send(result.insertedCount > 0) );
+      .then(result => res.send({inserted: result.insertedCount > 0, _id: result.insertedId}));
     });
 
     app.get('/services', (req, res) => {
@@ -198,7 +198,7 @@ client.connect(err => {
         { $set: feedback }
         )
       .then(result => {
-        res.send(result.modifiedCount > 0);
+        res.send({inserted: result.modifiedCount > 0});
       })
     });
 
