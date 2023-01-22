@@ -43,7 +43,7 @@ app.get("/", (req, res) => {
       const service = req.body;
       servicesCollection.insertOne(service).then((result) =>
         res.send({
-          inserted: result.insertedCount > 0,
+          inserted: result.acknowledged,
           _id: result.insertedId,
         })
       );
@@ -66,7 +66,7 @@ app.get("/", (req, res) => {
       const { email, name } = req.body;
       adminsCollection.insertOne({ email, name }).then((result) => {
         res.send({
-          inserted: result.insertedCount > 0,
+          inserted: result.acknowledged,
           _id: result.insertedId,
         });
       });
@@ -76,7 +76,7 @@ app.get("/", (req, res) => {
       const bookOrder = req.body;
       booksCollection.insertOne(bookOrder).then((result) =>
         res.send({
-          inserted: result.insertedCount > 0,
+          inserted: result.acknowledged,
           _id: result.insertedId,
         })
       );
@@ -86,7 +86,7 @@ app.get("/", (req, res) => {
       const feedback = req.body;
       feedbackCollection.insertOne(feedback).then((result) =>
         res.send({
-          inserted: result.insertedCount > 0,
+          inserted: result.acknowledged,
           _id: result.insertedId,
         })
       );
